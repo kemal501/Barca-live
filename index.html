@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>BARCA LIVE – Live Streaming Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Auth Container -->
+        <div id="auth-container" class="container">
+            <div class="logo">🔵🔴 BARCA LIVE</div>
+            <div class="tagline">Live the Barca Way</div>
+            <input type="email" id="email" placeholder="Email" class="input">
+            <input type="password" id="password" placeholder="Password" class="input">
+            <button onclick="signUp()" class="btn primary">Sign Up</button>
+            <button onclick="signIn()" class="btn secondary">Login</button>
+            <button onclick="googleSignIn()" class="btn google">Google</button>
+            <div id="auth-error" class="error"></div>
+        </div>
+
+        <!-- Dashboard (shown after login) -->
+        <div id="dashboard" style="display:none;">
+            <div class="navbar">
+                <div class="logo">🔵🔴 BARCA LIVE</div>
+                <div class="nav-links">
+                    <span id="user-name"></span>
+                    <button onclick="logout()" class="btn small">Logout</button>
+                </div>
+            </div>
+            <div class="dashboard-container">
+                <div class="balance-card">
+                    <div>💰 Personal Coins: <span id="coins">0</span></div>
+                    <div>💎 Diamonds: <span id="diamonds">0</span></div>
+                    <button onclick="showBuyCoins()" class="btn small">Buy Coins</button>
+                    <button onclick="showWithdraw()" class="btn small">Withdraw</button>
+                </div>
+
+                <!-- Reseller Section (visible only for resellers) -->
+                <div id="reseller-section" style="display:none;">
+                    <div class="balance-card reseller">
+                        <div>💼 Reseller Coins: <span id="reseller-coins">0</span></div>
+                        <button onclick="showBuyPackage()" class="btn primary">Buy Coin Package</button>
+                        <button onclick="showTransferCoins()" class="btn secondary">Sell Coins to User</button>
+                    </div>
+                    <div id="packages-list" class="packages-grid"></div>
+                </div>
+
+                <div class="rooms-section">
+                    <h3>🎤 Live Rooms</h3>
+                    <button onclick="showCreateRoom()" class="btn primary">Create Room</button>
+                    <div id="rooms-list" class="rooms-grid"></div>
+                </div>
+
+                <div class="gifts-section">
+                    <h3>🎁 Send Gift</h3>
+                    <div id="gifts-list" class="gifts-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="buy-coins-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('buy-coins-modal')">&times;</span>
+            <h3>Buy Coins (Personal)</h3>
+            <button onclick="buyCoins(1)">$1 – 100 coins</button>
+            <button onclick="buyCoins(5)">$5 – 500 coins</button>
+            <button onclick="buyCoins(10)">$10 – 1200 coins</button>
+        </div>
+    </div>
+
+    <div id="withdraw-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('withdraw-modal')">&times;</span>
+            <h3>Withdraw Diamonds</h3>
+            <input type="number" id="withdraw-amount" placeholder="Amount USD (min $10)">
+            <select id="withdraw-method">
+                <option value="bank">Bank Transfer</option>
+                <option value="paypal">PayPal</option>
+                <option value="telebirr">Telebirr</option>
+                <option value="chapa">Chapa</option>
+            </select>
+            <input type="text" id="withdraw-details" placeholder="Account details">
+            <button onclick="requestWithdrawal()" class="btn primary">Request</button>
+        </div>
+    </div>
+
+    <div id="create-room-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('create-room-modal')">&times;</span>
+            <h3>Create Room</h3>
+            <input type="text" id="room-title" placeholder="Room Title">
+            <select id="room-type">
+                <option value="voice">Voice Room</option>
+                <option value="video">Video Room</option>
+            </select>
+            <button onclick="createRoom()" class="btn primary">Create</button>
+        </div>
+    </div>
+
+    <!-- Package selection modal -->
+    <div id="buy-package-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('buy-package-modal')">&times;</span>
+            <h3>Buy Reseller Package</h3>
+            <div id="packages-modal-list"></div>
+        </div>
+    </div>
+</body>
+</html>
